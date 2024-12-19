@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Careers</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="nav">
+            <div class="logo">
+                <img class="logo-default" src="https://www.erarf.com/wp-content/uploads/2022/04/era_logo.svg"
+                    alt="ERA RF TECHNOLOGIES" itemprop="url">
+            </div>
+            <div class="link">
+                <a href="#">HOME</a>
+                <a href="#">CORPORATE</a>
+                <a href="#">PRODUCTS</a>
+                <a href="#">CAREERS</a>
+                <a href="#">CONTACT</a>
+            </div>
+        </div>
+        <div class="form">
+            <h1>APPLY TO JOB</h1>
+            <form action="/submit" method="POST" enctype="multipart/form-data" id="form">
+                <div class="form-item">
+                    <label for="fullname" class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="fullname" name="fullname" required>
+                </div>
+                <div class="form-item">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <div class="form-item">
+                    <label for="email" class="form-label">Position Applying For</label>
+                    <select name="PositionApplyingFor" class="form-control" aria-invalid="false" id="select">
+                        <option value="General Application">General Application</option>
+                        <option value="Project Management Engineers">Project Management Engineers</option>
+                        <option value="DSP Algorithm Design Engineer">DSP Algorithm Design Engineer</option>
+                        <option value="Senior Digital Design Engineer">Senior Digital Design Engineer</option>
+                        <option value="Candidate Software Developers (Intern/Part-time)">Candidate Software Developers
+                            (Intern/Part-time)</option>
+                        <option value="Test Automation Engineer">Test Automation Engineer</option>
+                        <option value="Elektronik Üretim Teknisyeni">Elektronik Üretim Teknisyeni</option>
+                        <option value="Depo Sorumlusu">Depo Sorumlusu</option>
+                        <option value="Purchasing Assistant">Purchasing Assistant</option>
+                        <option value="Mekanik Teknikeri">Mekanik Teknikeri</option>
+                        <option value="Muhasebe Uzman Yardımcısı">Muhasebe Uzman Yardımcısı</option>
+                    </select>
+                </div>
+
+                <div class="form-item">
+                    <label for="file" class="form-label">Upload Your CV:</label>
+                    <input style=" padding: 0; " type="file" name="CV" size="40" class="form-control" id="cvFile"
+                        accept=".pdf,.png,.jpg" aria-required="true" aria-invalid="false">
+                </div>
+
+                <button id="submit" type="submit" class="formBtn">Submit</button>
+            </form>
+        </div>
+    </div>
+
+
+
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
