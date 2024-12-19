@@ -1,0 +1,210 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #171717;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    font-family: 'Roboto', sans-serif;
+}
+
+h1 {
+    font-family: "Manrope", sans-serif;
+    color: white;
+    font-size: 3.3rem;
+}
+
+.container {
+    width: 100%;
+}
+
+.nav {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2rem 4rem;
+
+}
+
+.nav a {
+    color: white;
+    font-size: 1.5rem;
+    text-decoration: none;
+    margin-left: 1.5rem;
+
+}
+
+.form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    /* background-color: rgb(77, 134, 184); */
+    padding: 1rem;
+    margin-top: 3rem;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.form form {
+    width: 50%;
+    background-color: #272727;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 3rem;
+    border-radius: 8px;
+    gap: 2rem;
+}
+
+.form-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: left;
+    width: 100%;
+    padding: .5rem;
+    gap: 2rem;
+}
+
+.form-item .form-label {
+    width: 100%;
+    color: #7A7A7A;
+    font-size: 1.2rem;
+}
+
+.form-item .form-control {
+    width: 100%;
+    height: 2rem;
+    padding-inline-start: 0;
+    padding-inline-end: 0;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: 1px solid #d5d6de;
+    background-color: transparent;
+    color: #ffffffb3;
+    padding: .5rem;
+    font-size: 16px;
+}
+
+.form-item .form-control:focus {
+    outline: none;
+}
+
+.form-item select.form-control {
+    width: 100%;
+    height: 2rem;
+    padding-inline-start: 0;
+    padding-inline-end: 0;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: 1px solid #d5d6de;
+    background-color: transparent;
+    color: #ffffffb3;
+    font-size: 16px;
+    position: relative;
+    padding: 0;
+}
+
+/* Açılır menüyü tam olarak input'un altında göstermek için */
+.form-item select.form-control option {
+    background-color: #d4d3d3;
+    color: #000;
+}
+
+/* Seçim yapıldığında açılır menüye ait arka plan rengini ayarlayalım */
+.form-item select.form-control:focus {
+    outline: none;
+}
+
+.formBtn {
+    background-color: #171717;
+    border: 2px solid #ffffffb3;
+    border-radius: 50em;
+    color: #fff;
+    padding: 1rem 3rem;
+    font-size: 1.2rem;
+}
+
+.formBtn:hover {
+    background-color: #fff;
+    color: black;
+}
+
+/* Container için stil */
+.alert-container {
+    padding: 15px;
+    top: 7rem;
+    right: 34rem;
+    font-size: 16px;
+    position: absolute;
+    width: 40%;
+    margin-left: auto;
+    margin-right: auto;
+    /* Ortalanmış alert'ler */
+}
+
+/* Success alert için stil */
+.alert.success {
+    background-color: #28a745;
+    color: white;
+    border: 1px solid #28a745;
+    height: 70px;
+    border-radius: 6px;
+    text-align: center;
+    width: 100%;
+    /* Container'a göre genişlik */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+/* Danger alert için stil */
+.alert.danger {
+    background-color: #dc3545;
+    color: white;
+    border: 1px solid #dc3545;
+    height: 70px;
+    border-radius: 6px;
+    text-align: center;
+    width: 100%;
+    /* Container'a göre genişlik */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+/* Kapanma butonu için stil */
+.alert .close-alert {
+    background: none;
+    color: white;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    position: absolute;
+    top: 14px;
+    right: 24px;
+    cursor: pointer;
+}
+
+/* Kapanma butonu üzerine gelince biraz şeffaflık */
+.alert .close-alert:hover {
+    opacity: 0.8;
+}
+
+/* Alert mesajlarının içinde görsel düzenleme */
+.alert-message {
+    display: inline-block;
+    padding-right: 30px;
+    /* Kapanma butonundan uzaklık */
+}
