@@ -34,9 +34,7 @@ jobs:
         npm run build  # Eğer derleme veya önceden oluşturulması gereken dosyalar varsa
 
     - name: Deploy to Render
-      env:
-        RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}  # Render API anahtarınızı GitHub Secrets'e ekleyin
-        RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}  # Render service ID'nizi GitHub Secrets'e ekleyin
+      
       run: |
         curl -X POST \
         -H "Authorization: Bearer $RENDER_API_KEY" \
