@@ -25,11 +25,6 @@ jobs:
       run: npm install
       working-directory: ./server  # GitHub Actions ortamında server dizini
 
-    # 4. Projeyi build etme (isteğe bağlı)
-    - name: Build the project
-      run: npm run build
-      working-directory: ./server  # Server dizininde build işlemi yapılır
-
     # 5. Render'a deploy
     - name: Deploy to Render
       run: |
