@@ -34,10 +34,12 @@ const upload = multer({
             if (!fs.existsSync(jobFolder)) {
                 fs.mkdirSync(jobFolder, { recursive: true }); // Klasörü oluştur
             }
+            console.log(`Yükleme yapılan klasör: ${jobFolder}`); // Log
             cb(null, jobFolder); // Hedef klasör
         },
         filename: function (req, file, cb) {
             const uniqueName = sanitizeFilename(file.originalname);
+            console.log(`Dosya adı: ${uniqueName}`); // Log
             cb(null, uniqueName); // Güvenli dosya adı
         },
     }),
