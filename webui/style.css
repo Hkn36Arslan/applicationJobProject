@@ -145,11 +145,8 @@ h1 {
     top: 7rem;
     right: 34rem;
     font-size: 16px;
-    position: relative;
+    position: absolute;
     width: 40%;
-    margin-left: auto;
-    margin-right: auto;
-    /* Ortalanmış alert'ler */
 }
 
 /* Success alert için stil */
@@ -189,7 +186,7 @@ h1 {
     background: none;
     color: white;
     border: none;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: bold;
     position: absolute;
     top: 14px;

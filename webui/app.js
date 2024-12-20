@@ -17,7 +17,7 @@ $(document).ready(function () {
             processData: false, // FormData ile gönderdiğimiz için kapalı
             contentType: false, // FormData ile gönderdiğimiz için kapalı
             success: (res) => {
-                showAlert("success", "Data submitted successfully: " + res.message);
+                showAlert("success", res.message);
             },
             error: (xhr) => {
                 const response = JSON.parse(xhr.responseText);

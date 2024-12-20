@@ -1,0 +1,34 @@
+# Dependency dizini
+node_modules/
+
+# Üretim için derlenmiş dosyalar
+dist/
+build/
+
+# Test kapsamı raporları
+coverage/
+
+# Ortam değişkenleri ve hassas bilgiler
+.env
+
+# Log dosyaları
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Geçici dosyalar
+*.tmp
+*.bak
+*.swp
+*.swo
+*~
+
+# IDE ayarları
+.vscode/
+.idea/
+
+# Sistem dosyaları
+.DS_Store
+Thumbs.db
+

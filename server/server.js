@@ -3,7 +3,7 @@ const multer = require("multer");
 const bodyParser = require("body-parser");
 const path = require("path");
 const fs = require("fs");
-
+const nodemailer = require("nodemailer");
 const PORT = process.env.PORT || 3000;
 const app = express();
 
@@ -39,6 +39,46 @@ const upload = multer({
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "../webui", "index.html"));
 });
+
+// E-posta gönderme fonksiyonu
+function sendEmail(toEmail, fullName, position, err) {
+    if (err) {
+        console.error("Ethereal hesap oluşturulamadı:", err);
+        return;
+    }
+    const account = nodemailer.createTestAccount();
+    // SMTP transporter ayarları
+    const transporter = nodemailer.createTransport({
+        host: "smtp.ethereal.email",
+        port: 587,
+        secure: false, // TLS kullanımı
+        auth: {
+            user: 'amalia.connelly33@ethereal.email',
+            pass: '9jqsYJ2ygaEtQA2Fxe'
+        },
+    });
+
+
+    // E-posta içeriği
+    const mailOptions = {
+        from: '"Test Gönderen" <test@example.com>', // Gönderen
+        to: toEmail,                 // Alıcı
+        subject: "Ethereal Test E-postası", // Konu
+        text: `Dear ${fullName},\n\nYour application for the position "${position}" has been received. We will get back to you as soon as possible.\n\nBest regards,\nERA RF TECHNOLOGİES`, // Mesaj içeriği
+    };
+
+    // E-postayı gönder
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.error("Error sending email:", error);
+        } else {
+            console.log("E-posta başarıyla gönderildi:", info.messageId);
+
+            // Ethereal'da e-postayı görüntülemek için önizleme URL'si
+            console.log("E-postayı görüntüleyin:", nodemailer.getTestMessageUrl(info));
+        }
+    });
+}
 
 // Başvuru kontrolü ve form verilerini işleme
 app.post("/submit", upload.single("cvFile"), (req, res) => {
@@ -76,7 +116,11 @@ app.post("/submit", upload.single("cvFile"), (req, res) => {
             }
 
             console.log("Received data:", { fullName, email, position, filePath });
-            res.status(200).json({ message: "Data received and file uploaded successfully!" });
+
+            // E-posta gönder
+            sendEmail(email, fullName, position);
+
+            res.status(200).json({ message: "Your application has been received successfully." });
         });
     });
 });
