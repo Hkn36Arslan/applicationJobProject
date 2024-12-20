@@ -25,10 +25,11 @@ jobs:
       run: npm install
       working-directory: ./server  # GitHub Actions ortamında server dizini
 
-    # 5. Render'a deploy
+    # 4. Deploy işlemini yapma
     - name: Deploy to Render
       run: |
-       --api-key ${{ secrets.RENDERAPPLICATIONPROJECT }} \
         echo "Deploying to Render..."
-        # Render'a yükleme komutlarını buraya ekleyin
-        # Örneğin SSH komutları veya Render CLI komutları
+        curl -s https://cdn.render.com/deploy | bash -s -- \
+          --api-key ${{ secrets.RENDER_API_KEY }} \
+          --service-name your-service-name \
+          --branch main
