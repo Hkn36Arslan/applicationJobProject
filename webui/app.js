@@ -1,4 +1,4 @@
-$(document).ready(function () {
+$(document).ready(function (event) {
     $("#form").on("submit", (e) => {
         e.preventDefault();
 
@@ -25,7 +25,48 @@ $(document).ready(function () {
             },
         });
     });
+    /* ******************************************* ADMİN PANEL ***************************************** */
+    // Sunucudan başvuru bilgilerini al
+    const getApplications = () => {
+        $.ajax({
+            url: "/submissions",
+            type: "GET",
+            success: (submissions) => {
+                const tableBody = $("#tbody");
+                tableBody.empty(); // Eski verileri temizle
+                const dataSubmissions = submissions;
+                console.log("dataSubmissions", dataSubmissions)
+                dataSubmissions.forEach((submission) => {
+                    const fileName = submission.filePath.split("/").pop(); // Dosya adını al
+                    const fileURL = submission.filePath.replace(/\\/g, "/"); // Windows yolunu düzelt
 
+                    // Yeni bir satır oluştur
+                    const row = `
+                            <tr>
+                                <td>${submission.fullName}</td>
+                                <td>${submission.email}</td>
+                                <td>${submission.position}</td>
+                                <td>
+                                    <a href="${fileURL}" target="_blank" class="btn btn-primary btn-sm">View</a>
+                                    <a href="${fileURL}" download="${fileName}" class="btn btn-secondary btn-sm">Download</a>
+                                </td>
+                            </tr>
+                        `;
+
+                    // Satırı tabloya ekle
+                    tableBody.append(row);
+                });
+            },
+            error: (xhr) => {
+                console.error("Başvurular yüklenirken hata oluştu:", xhr);
+            },
+        });
+    };
+    setTimeout(() => {
+        getApplications();
+    }, 10);
+
+    /* *************************************************************************************************** */
     // Alert mesajı gösteren fonksiyon
     function showAlert(type, message) {
         const alert = $(".alert." + type); // Success veya danger alert'ini al

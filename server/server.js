@@ -12,6 +12,7 @@ const submissionsFile = path.join(__dirname, "submissions.json");
 
 // Static dosya sunumu
 app.use(express.static(path.join(__dirname, "../webui")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Body parser middleware
 app.use(express.json());
@@ -61,7 +62,7 @@ function sendEmail(toEmail, fullName, position, err) {
 
     // E-posta içeriği
     const mailOptions = {
-        from: '"Test Gönderen" <test@example.com>', // Gönderen
+        from: 'info@erarf.com', // Gönderen
         to: toEmail,                 // Alıcı
         subject: "Ethereal Test E-postası", // Konu
         text: `Dear ${fullName},\n\nYour application for the position "${position}" has been received. We will get back to you as soon as possible.\n\nBest regards,\nERA RF TECHNOLOGİES`, // Mesaj içeriği
@@ -122,6 +123,21 @@ app.post("/submit", upload.single("cvFile"), (req, res) => {
 
             res.status(200).json({ message: "Your application has been received successfully." });
         });
+    });
+});
+
+// Sunucudan İş Başvurularını Alma
+app.get("/submissions", (req, res) => {
+
+    fs.readFile(submissionsFile, "utf-8", (err, data) => {
+
+        if (err && err.code !== "ENOENT") {
+            return res.status(500).json({ message: "Error reading submissions." });
+        }
+
+        const submissions = data ? JSON.parse(data) : [];
+        res.status(200).json(submissions);
+
     });
 });
 
