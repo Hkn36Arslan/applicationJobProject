@@ -10,20 +10,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # 1. Kodları GitHub'dan çekme
     - name: Checkout code
       uses: actions/checkout@v2
 
+    # 2. Node.js kurulumunu yapma
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
         node-version: '14'
 
+    # 3. Bağımlılıkları yükleme
     - name: Install dependencies
-      run: npm install  # package.json'ı doğru dizinde bulacak şekilde çalıştırılır.
+      run: npm install
+      working-directory: ./server  # GitHub Actions ortamında server dizini
 
+    # 4. Projeyi build etme (isteğe bağlı)
     - name: Build the project
       run: npm run build
+      working-directory: ./server  # Server dizininde build işlemi yapılır
 
+    # 5. Render'a deploy
     - name: Deploy to Render
       run: |
-        # Render deploy komutları buraya gelecek
+        echo "Deploying to Render..."
+        # Render'a yükleme komutlarını buraya ekleyin
+        # Örneğin SSH komutları veya Render CLI komutları
