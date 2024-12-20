@@ -19,12 +19,10 @@ jobs:
         node-version: '14'
 
     - name: Install dependencies
-      run: npm install
-      working-directory: ./path/to/your/project/directory
+      run: npm install  # package.json'ı doğru dizinde bulacak şekilde çalıştırılır.
 
     - name: Build the project
       run: npm run build
-      working-directory: ./path/to/your/project/directory
 
     - name: Deploy to Render
       run: |
