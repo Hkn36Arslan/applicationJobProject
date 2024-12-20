@@ -19,19 +19,26 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Dosya yükleme için multer yapılandırması
+const sanitizeFilename = (filename) => {
+    return filename
+        .replace(/\s+/g, "_") // Boşlukları alt çizgiyle değiştir
+        .replace(/[^a-zA-Z0-9._-]/g, "") // Kabul edilmeyen karakterleri kaldır
+        .toLowerCase(); // Dosya adını küçük harfe çevir
+};
+
 const upload = multer({
     limits: { fileSize: 5 * 1024 * 1024 },
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
-            const jobFolder = path.join(__dirname, "uploads", req.body.position);
+            const jobFolder = path.join(__dirname, "uploads", sanitizeFilename(req.body.position));
             if (!fs.existsSync(jobFolder)) {
                 fs.mkdirSync(jobFolder, { recursive: true }); // Klasörü oluştur
             }
             cb(null, jobFolder); // Hedef klasör
         },
         filename: function (req, file, cb) {
-            const uniqueName = `${file.originalname}`;
-            cb(null, uniqueName); // Benzersiz dosya adı
+            const uniqueName = sanitizeFilename(file.originalname);
+            cb(null, uniqueName); // Güvenli dosya adı
         },
     }),
 });
@@ -59,13 +66,12 @@ function sendEmail(toEmail, fullName, position, err) {
         },
     });
 
-
     // E-posta içeriği
     const mailOptions = {
         from: 'info@erarf.com', // Gönderen
         to: toEmail,                 // Alıcı
         subject: "Ethereal Test E-postası", // Konu
-        text: `Dear ${fullName},\n\nYour application for the position "${position}" has been received. We will get back to you as soon as possible.\n\nBest regards,\nERA RF TECHNOLOGİES`, // Mesaj içeriği
+        text: `Dear ${fullName},\n\nYour application for the position \"${position}\" has been received. We will get back to you as soon as possible.\n\nBest regards,\nERA RF TECHNOLOGİES`, // Mesaj içeriği
     };
 
     // E-postayı gönder
