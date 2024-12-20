@@ -28,6 +28,7 @@ jobs:
     # 5. Render'a deploy
     - name: Deploy to Render
       run: |
+       --api-key ${{ secrets.RENDERAPPLICATIONPROJECT }} \
         echo "Deploying to Render..."
         # Render'a yükleme komutlarını buraya ekleyin
         # Örneğin SSH komutları veya Render CLI komutları
