@@ -31,8 +31,15 @@ app.use(express.urlencoded({ extended: true }));
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: "job_applications",
-    allowed_formats: ["pdf", "doc", "docx"], // İzin verilen dosya türleri
+    folder: (req, file) => {
+      const sanitizedPosition = req.body.position;
+      const sanitizedFolderName = sanitizedPosition
+        .replace(/\s+/g, "_")
+        .replace(/[^a-zA-Z0-9._-]/g, "")
+        .toLowerCase();
+      return `job_applications/${sanitizedFolderName}`; // Klasör adı pozisyon ismine göre oluşturulacak
+    },
+    allowed_formats: ["pdf"], // İzin verilen dosya türleri
     public_id: (req, file) => {
       const sanitizedName = (value) => {
         return value
@@ -41,8 +48,7 @@ const storage = new CloudinaryStorage({
           .toLowerCase();
       };
       const sanitizedFileName = sanitizedName(file.originalname);
-      const sanitizedFolderName = sanitizedName(req.body.position);
-      return `${sanitizedFolderName}/${sanitizedFileName}`;
+      return `job_applications/${sanitizedFileName}`; // Dosyanın ismi
     },
   },
 });

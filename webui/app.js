@@ -54,7 +54,6 @@ $(document).ready(function (event) {
                                 </td>
                             </tr>
                         `;
-
           // Satırı tabloya ekle
           tableBody.append(row);
         });
