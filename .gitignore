@@ -11,6 +11,10 @@ coverage/
 # Ortam değişkenleri ve hassas bilgiler
 .env
 
+node_modules/
+.env
+
+
 # Log dosyaları
 *.log
 npm-debug.log*
