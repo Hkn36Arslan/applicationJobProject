@@ -7,6 +7,7 @@ const fs = require("fs");
 const nodemailer = require("nodemailer");
 const cloudinary = require("cloudinary").v2;
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const { error } = require("console");
 const PORT = process.env.PORT || 3000;
 const app = express();
 
@@ -19,6 +20,7 @@ cloudinary.config({
 
 // Başvuruları saklayacağımız dosya yolu
 const submissionsFile = path.join(__dirname, "submissions.json");
+const adminData = path.join(__dirname, "data.json");
 
 // Static dosya sunumu
 app.use(express.static(path.join(__dirname, "../webui")));
@@ -156,6 +158,16 @@ app.get("/submissions", (req, res) => {
 
     const submissions = data ? JSON.parse(data) : [];
     res.status(200).json(submissions);
+  });
+});
+
+app.get("/login", (req, res) => {
+  fs.readFile(adminData, "utf-8", (err, data) => {
+    if (err && err.code !== "ENOENT") {
+      return res.status(500).json({ message: "Error reading submissions." });
+    }
+    const admin = data ? JSON.parse(data) : [];
+    res.status(200).json(admin);
   });
 });
 

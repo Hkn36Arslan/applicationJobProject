@@ -32,18 +32,30 @@ $(document).ready(function (event) {
 
   $("#adminLogin").on("submit", (e) => {
     e.preventDefault();
-    if ($("#username").val() == username && $("#password").val() == password) {
-      showAlert("success", `Login successfully ${userName}.`);
-      setTimeout(() => {
-        window.location.href = "admin.html";
-      }, 1500);
-    }
-    else {
-      showAlert(
-        "danger",
-        "Username or password is incorrect!"
-      );
-    }
+    $.ajax({
+      url: "/login",
+      type: "GET",
+      success: (admin) => {
+        if ($("#username").val() == admin.username && $("#password").val() == admin.password) {
+          showAlert("success", `Login successfully ${admin.username}.`);
+          setTimeout(() => {
+            window.location.href = "admin.html";
+          }, 1500);
+        }
+        else {
+          showAlert(
+            "danger",
+            "Username or password is incorrect!"
+          );
+        }
+      },
+      error: (xhr) => {
+        showAlert(
+          "danger",
+          "admin verileri yüklenirken hata oluştu:", xhr
+        );
+      },
+    });
   });
 
   /* ******************************************* ADMİN PANEL ***************************************** */
@@ -56,9 +68,7 @@ $(document).ready(function (event) {
         const tableBody = $("#tbody");
         tableBody.empty(); // Eski verileri temizle
         const dataSubmissions = submissions;
-        console.log("dataSubmissions", dataSubmissions);
         dataSubmissions.forEach((submission) => {
-          const fileName = submission.filePath.split("/").pop(); // Dosya adını al
           const fileURL = submission.filePath.replace(/\\/g, "/"); // Windows yolunu düzelt
 
           // Yeni bir satır oluştur
