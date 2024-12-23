@@ -1,13 +1,11 @@
 require("dotenv").config();
 const express = require("express");
 const multer = require("multer");
-const bodyParser = require("body-parser");
 const path = require("path");
 const fs = require("fs");
 const nodemailer = require("nodemailer");
 const cloudinary = require("cloudinary").v2;
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
-const { error } = require("console");
 const PORT = process.env.PORT || 3000;
 const app = express();
 
@@ -20,6 +18,8 @@ cloudinary.config({
 
 // Başvuruları saklayacağımız dosya yolu
 const submissionsFile = path.join(__dirname, "submissions.json");
+
+// Admin data
 const adminData = path.join(__dirname, "data.json");
 
 // Static dosya sunumu
@@ -28,6 +28,7 @@ app.use(express.static(path.join(__dirname, "../webui")));
 // Body parser middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 
 // Cloudinary için multer yapılandırması
 const storage = new CloudinaryStorage({
@@ -55,10 +56,12 @@ const storage = new CloudinaryStorage({
   },
 });
 
+
 const upload = multer({
   storage: storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // Maksimum dosya boyutu
 });
+
 
 // Ana sayfa
 app.get("/", (req, res) => {
@@ -161,6 +164,7 @@ app.get("/submissions", (req, res) => {
   });
 });
 
+// Admin data bilgilerini alma
 app.get("/login", (req, res) => {
   fs.readFile(adminData, "utf-8", (err, data) => {
     if (err && err.code !== "ENOENT") {
