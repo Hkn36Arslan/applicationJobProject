@@ -32,13 +32,7 @@ $(document).ready(function (event) {
 
   $("#adminLogin").on("submit", (e) => {
     e.preventDefault();
-
-    console.log("username:", $("#username").val())
-    console.log("password:", $("#password").val())
-    console.log("typeOFusername:", typeof $("#username").val())
-    console.log("typeOFpassword:", typeof $("#password").val())
-
-    if ($("#username").val() === username && $("#password").val() === password) {
+    if ($("#username").val() == username && $("#password").val() == password) {
       showAlert("success", `Login successfully ${userName}.`);
       setTimeout(() => {
         window.location.href = "admin.html";
