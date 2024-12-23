@@ -78,7 +78,9 @@ $(document).ready(function (event) {
                                 <td>${submission.email}</td>
                                 <td>${submission.position}</td>
                                 <td>
-                                    <a href="${fileURL}" target="_blank" class="btn btn-primary btn-sm"><img style="with:50px;height:50px;" src="/images/pdf2.png"></a>  
+                                    <a href="${fileURL}" target="_blank" class="btn btn-primary btn-sm">
+                                    <img style="with:50px;height:50px;" src="/images/pdf2.png">
+                                    </a>  
                                 </td>
                             </tr>
                         `;
