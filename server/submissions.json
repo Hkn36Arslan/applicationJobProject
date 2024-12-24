@@ -1,3 +1,26 @@
 [
-  
+  {
+    "fullName": "Hakan Arslan",
+    "email": "hakanarslan3625@gmail.com",
+    "position": "General Application",
+    "filePath": "https://res.cloudinary.com/dcw8ljuju/image/upload/v1735018634/job_applications/general_application/general_application-39f8e806-c96c-4c4b-8259-2e1f508b9cea.pdf"
+  },
+  {
+    "fullName": "Hakan Arslan",
+    "email": "hakanarslan3625@gmail.com",
+    "position": "Project Management Engineers",
+    "filePath": "https://res.cloudinary.com/dcw8ljuju/image/upload/v1735021167/job_applications/project_management_engineers/project_management_engineers-908b60db-9be7-46d0-a335-4dffc92d699c.pdf"
+  },
+  {
+    "fullName": "Hakan Arslan",
+    "email": "hakanarslan3625@gmail.com",
+    "position": "Depo Sorumlusu",
+    "filePath": "https://res.cloudinary.com/dcw8ljuju/image/upload/v1735021222/job_applications/depo_sorumlusu/depo_sorumlusu-4566b7db-4798-485f-bf76-868743fc32e4.pdf"
+  },
+  {
+    "fullName": "Hakan Arslan",
+    "email": "hakan@gmail.com",
+    "position": "Senior Digital Design Engineer",
+    "filePath": "https://res.cloudinary.com/dcw8ljuju/image/upload/v1735021274/job_applications/senior_digital_design_engineer/senior_digital_design_engineer-5256518d-c680-4b09-b09a-35e42bd5bcfe.pdf"
+  }
 ]

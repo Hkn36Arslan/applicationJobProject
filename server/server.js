@@ -5,6 +5,7 @@ const path = require("path");
 const fs = require("fs");
 const nodemailer = require("nodemailer");
 const cloudinary = require("cloudinary").v2;
+const { v4: uuidv4 } = require("uuid");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const PORT = process.env.PORT || 3000;
 const app = express();
@@ -35,23 +36,16 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: (req, file) => {
-      const sanitizedPosition = req.body.position;
-      const sanitizedFolderName = sanitizedPosition
+      const sanitizedPosition = req.body.position
         .replace(/\s+/g, "_")
         .replace(/[^a-zA-Z0-9._-]/g, "")
         .toLowerCase();
-      return `job_applications/${sanitizedFolderName}`; // Klasör adı pozisyon ismine göre oluşturulacak
+      return `job_applications/${sanitizedPosition}`;
     },
-    allowed_formats: ["pdf"], // İzin verilen dosya türleri
+    allowed_formats: ["pdf"],
     public_id: (req, file) => {
-      const sanitizedName = (value) => {
-        return value
-          .replace(/\s+/g, "_")
-          .replace(/[^a-zA-Z0-9._-]/g, "")
-          .toLowerCase();
-      };
-      const sanitizedFileName = sanitizedName(file.originalname);
-      return `job_applications/${sanitizedFileName}`; // Dosyanın ismi
+      const uniqueId = uuidv4(); // Her dosya için benzersiz bir ID oluşturulur
+      return `${req.body.position.replace(/\s+/g, "_").toLowerCase()}-${uniqueId}`;
     },
   },
 });
@@ -151,6 +145,77 @@ app.post("/submit", upload.single("cvFile"), (req, res) => {
     );
   });
 });
+
+//Başvuru Silme
+app.delete("/delete", (req, res) => {
+  const { email, position } = req.body;
+
+  fs.readFile(submissionsFile, "utf-8", (err, data) => {
+    if (err && err.code !== "ENOENT") {
+      return res.status(500).json({ message: "Error reading submissions." });
+    }
+
+    let submissions = data ? JSON.parse(data) : [];
+
+    // Silinecek başvuruyu bul
+    const index = submissions.findIndex(
+      (submission) =>
+        submission.email === email && submission.position === position
+    );
+    if (index === -1) {
+      return res.status(404).json({ message: "Submission not found." });
+    }
+
+    const [deletedSubmission] = submissions.splice(index, 1);
+
+    // Cloudinary'den dosyayı silmek için URL'den public_id almak
+    if (deletedSubmission.filePath) {
+      const fileUrl = deletedSubmission.filePath;
+
+      // URL'den public_id'yi çıkar
+      const pathParts = fileUrl.split('/image/upload/')[1]?.split('/');
+      const publicId = pathParts.slice(2).join('/').split('.')[0]; // İkinci kısımdan başlayıp uzantıyı çıkarıyoruz
+
+      console.log("publicId:::", publicId);
+
+      cloudinary.api.resource(publicId, function (error, result) {
+        if (error) {
+          console.log('Error retrieving file:', error);
+        } else {
+          console.log('File details:', result);
+        }
+      });
+      // Cloudinary'den dosyayı sil
+      cloudinary.uploader.destroy(publicId, (error, result) => {
+        if (error) {
+          console.error("Error deleting file from Cloudinary:", error);
+        } else {
+          console.log("File deleted from Cloudinary:", result);
+        }
+      });
+    }
+
+
+    // submissions.json dosyasını güncelle
+    fs.writeFile(
+      submissionsFile,
+      JSON.stringify(submissions, null, 2),
+      "utf8",
+      (writeErr) => {
+        if (writeErr) {
+          return res
+            .status(500)
+            .json({ message: "Error updating submissions file." });
+        }
+
+        res.status(200).json({ message: "Submission deleted successfully." });
+      }
+    );
+  });
+});
+
+
+
 
 // Sunucudan İş Başvurularını Alma
 app.get("/submissions", (req, res) => {

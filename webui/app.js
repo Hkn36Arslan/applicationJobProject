@@ -79,11 +79,17 @@ $(document).ready(function (event) {
                                 <td>${submission.position}</td>
                                 <td>
                                     <a href="${fileURL}" target="_blank" class="btn btn-primary btn-sm">
-                                    <img style="with:50px;height:50px;" src="/images/pdf2.png">
+                                    <img style="width:40px;height:40px;" src="/images/pdf2.png">
                                     </a>  
+                                </td>
+                                <td style="border:none;background:transparent;">
+                                <button class="delete">
+                                <i style="font-size:1.5rem;" class="fa-regular fa-trash-can"></i>
+                                </button>
                                 </td>
                             </tr>
                         `;
+          // style="width:50px;height:50px;padding:1rem;border-radius:1px;background-color:transparent;border:none;"
           // Satırı tabloya ekle
           tableBody.append(row);
         });
@@ -96,6 +102,46 @@ $(document).ready(function (event) {
   setTimeout(() => {
     getApplications();
   }, 10);
+  /* *********************************** DELETE PROCESS ****************************************** */
+  $("#tbody").on("click", ".delete", function () {
+    const row = $(this).closest("tr"); // Tıklanan butonun satırını al
+    const email = row.find("td:nth-child(2)").text(); // E-posta sütununu al
+    const position = row.find("td:nth-child(3)").text(); // Pozisyon sütununu al
+
+    $.ajax({
+      url: "/delete",
+      type: "DELETE",
+      contentType: "application/json",
+      data: JSON.stringify({ email, position }), // E-posta ve pozisyonu gönder
+      success: (response) => {
+        showAlert("success", response.message);
+        row.remove(); // Satırı tablodan kaldır
+      },
+      error: (xhr) => {
+        const response = JSON.parse(xhr.responseText);
+        showAlert(
+          "danger",
+          response.message || "An error occurred while deleting the submission."
+        );
+      },
+    });
+  });
+
+  /* ******************************************** Search ******************************************** */
+
+  $("#search-input").on("keyup", () => {
+
+    const searchValue = $("#search-input").val().toLowerCase();
+    if (searchValue === "") {
+      $('#tbody tr').show();
+    }
+    else {
+      $('#tbody tr').filter(function () {
+        // Her satırı kontrol et
+        $(this).toggle($(this).text().toLowerCase().indexOf(searchValue) > -1); // Eşleşen satırı göster, diğerlerini gizle
+      });
+    }
+  });
 
   /* *************************************************************************************************** */
   // Alert mesajı gösteren fonksiyon

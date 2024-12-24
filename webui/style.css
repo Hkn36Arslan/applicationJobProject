@@ -208,7 +208,7 @@ h1 {
 
 .admin {
     background-color: black;
-    color: #ffffff;
+    color: #ffffffb3 !important;
     text-align: center;
     border: 2px solid #ffffffb3;
     border-radius: 5px;
@@ -217,7 +217,21 @@ h1 {
 
 .admin:hover {
     background-color: #fff;
-    color: black;
+    color: black !important;
+}
+
+.delete {
+    background-color: black;
+    color: #ffffffb3;
+    text-align: center;
+    border: 1px solid #ffffffb3;
+    border-radius: 3px;
+    padding: .5rem;
+}
+
+.delete:hover {
+    background-color: #fff;
+    color: red;
 }
 
 .tableApplication {
@@ -232,6 +246,41 @@ h1 {
     gap: 2rem;
     margin-bottom: 2rem;
 }
+
+/* Searchbox */
+.search-container {
+    display: flex;
+    align-items: center;
+    width: 50%;
+    margin: 0 auto;
+    padding: 5px;
+    border: 1px solid #ffffffb3;
+    border-radius: 3px;
+    background-color: black;
+}
+
+#search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 10px;
+    font-size: 16px;
+    color: #ffffffb3;
+    background-color: black;
+}
+
+.fa-search {
+    font-size: 16px;
+    color: #ffffffb3;
+    margin-right: 1rem;
+}
+
+#search-button:hover {
+    background-color: black;
+    color: #fff;
+    border-radius: 50%;
+}
+
 
 /* Tablo stili */
 table {
