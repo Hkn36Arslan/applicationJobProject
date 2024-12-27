@@ -109,7 +109,7 @@ app.post("/submit", upload.single("cvFile"), (req, res) => {
   const filePath = req.file ? req.file.path : null; // Cloudinary'den gelen dosya yolu
 
   // Veritabanında aynı pozisyon ve e-posta ile başvuru olup olmadığını kontrol et
-  const checkQuery = 'SELECT * FROM applications WHERE email = ? AND position = ?';
+  const checkQuery = 'SELECT * FROM job_applications WHERE email = ? AND position = ?';
   db.execute(checkQuery, [email, position], (err, results) => {
     if (err) {
       return res.status(500).json({ message: "Error checking for existing submission." });
@@ -120,7 +120,7 @@ app.post("/submit", upload.single("cvFile"), (req, res) => {
     }
 
     // Veritabanına başvuru ekleme
-    const insertQuery = 'INSERT INTO applications (fullName, email, position, filePath) VALUES (?, ?, ?, ?)';
+    const insertQuery = 'INSERT INTO job_applications (fullName, email, position, filePath) VALUES (?, ?, ?, ?)';
     db.execute(insertQuery, [fullName, email, position, filePath], (err, result) => {
       if (err) {
         return res.status(500).json({ message: "Error saving submission to database." });
@@ -143,7 +143,7 @@ app.delete("/delete", (req, res) => {
   const { email, position } = req.body;
 
   // Veritabanından başvuru silme
-  const deleteQuery = 'DELETE FROM applications WHERE email = ? AND position = ?';
+  const deleteQuery = 'DELETE FROM job_applications WHERE email = ? AND position = ?';
   db.execute(deleteQuery, [email, position], (err, result) => {
     if (err) {
       return res.status(500).json({ message: "Error deleting submission from database." });
@@ -168,7 +168,7 @@ app.delete("/delete", (req, res) => {
 
 // Sunucudan İş Başvurularını Alma
 app.get("/submissions", (req, res) => {
-  const query = 'SELECT * FROM applications';
+  const query = 'SELECT * FROM job_applications';
   db.execute(query, (err, results) => {
     if (err) {
       return res.status(500).json({ message: "Error retrieving submissions from database." });
@@ -179,7 +179,7 @@ app.get("/submissions", (req, res) => {
 
 // Sunucudan Adminleri Alma
 app.get("/admin", (req, res) => {
-  const query = 'SELECT * FROM admin';
+  const query = 'SELECT * FROM admins';
   db.execute(query, (err, results) => {
     if (err) {
       return res.status(500).json({ message: "Error retrieving submissions from database." });
