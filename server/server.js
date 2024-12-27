@@ -7,6 +7,8 @@ const nodemailer = require("nodemailer");
 const cloudinary = require("cloudinary").v2;
 const { v4: uuidv4 } = require("uuid");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const mysql = require("mysql2");
+
 const PORT = process.env.PORT || 3000;
 const app = express();
 
@@ -17,11 +19,21 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Başvuruları saklayacağımız dosya yolu
-const submissionsFile = path.join(__dirname, "submissions.json");
+// MySQL bağlantısı
+const db = mysql.createConnection({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+});
 
-// Admin data
-const adminData = path.join(__dirname, "data.json");
+db.connect((err) => {
+  if (err) {
+    console.error("MySQL connection error:", err);
+  } else {
+    console.log("Connected to MySQL database");
+  }
+});
 
 // Static dosya sunumu
 app.use(express.static(path.join(__dirname, "../webui")));
@@ -29,7 +41,6 @@ app.use(express.static(path.join(__dirname, "../webui")));
 // Body parser middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 
 // Cloudinary için multer yapılandırması
 const storage = new CloudinaryStorage({
@@ -50,12 +61,10 @@ const storage = new CloudinaryStorage({
   },
 });
 
-
 const upload = multer({
   storage: storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // Maksimum dosya boyutu
 });
-
 
 // Ana sayfa
 app.get("/", (req, res) => {
@@ -99,146 +108,87 @@ app.post("/submit", upload.single("cvFile"), (req, res) => {
   const { fullName, email, position } = req.body;
   const filePath = req.file ? req.file.path : null; // Cloudinary'den gelen dosya yolu
 
-  fs.readFile(submissionsFile, "utf8", (err, data) => {
-    if (err && err.code !== "ENOENT") {
-      return res.status(500).json({ message: "Error reading submission data" });
+  // Veritabanında aynı pozisyon ve e-posta ile başvuru olup olmadığını kontrol et
+  const checkQuery = 'SELECT * FROM applications WHERE email = ? AND position = ?';
+  db.execute(checkQuery, [email, position], (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: "Error checking for existing submission." });
     }
 
-    let submissions = [];
-    if (data) {
-      submissions = JSON.parse(data);
+    if (results.length > 0) {
+      return res.status(400).json({ message: "You have already submitted a form for this position!" });
     }
 
-    const existingSubmission = submissions.find(
-      (submission) =>
-        submission.email === email && submission.position === position
-    );
-
-    if (existingSubmission) {
-      return res.status(400).json({
-        message: "You have already submitted a form for this position!",
-      });
-    }
-
-    const newSubmission = { fullName, email, position, filePath };
-    submissions.push(newSubmission);
-
-    fs.writeFile(
-      submissionsFile,
-      JSON.stringify(submissions, null, 2),
-      "utf8",
-      (writeErr) => {
-        if (writeErr) {
-          return res
-            .status(500)
-            .json({ message: "Error saving submission data" });
-        }
-
-        console.log("Received data:", { fullName, email, position, filePath });
-
-        sendEmail(email, fullName, position);
-
-        res.status(200).json({
-          message: "Your application has been received successfully.",
-        });
+    // Veritabanına başvuru ekleme
+    const insertQuery = 'INSERT INTO applications (fullName, email, position, filePath) VALUES (?, ?, ?, ?)';
+    db.execute(insertQuery, [fullName, email, position, filePath], (err, result) => {
+      if (err) {
+        return res.status(500).json({ message: "Error saving submission to database." });
       }
-    );
+
+      console.log("Received data:", { fullName, email, position, filePath });
+
+      // E-posta gönderme
+      sendEmail(email, fullName, position);
+
+      res.status(200).json({
+        message: "Your application has been received successfully.",
+      });
+    });
   });
 });
 
-//Başvuru Silme
+// Başvuru Silme
 app.delete("/delete", (req, res) => {
   const { email, position } = req.body;
 
-  fs.readFile(submissionsFile, "utf-8", (err, data) => {
-    if (err && err.code !== "ENOENT") {
-      return res.status(500).json({ message: "Error reading submissions." });
+  // Veritabanından başvuru silme
+  const deleteQuery = 'DELETE FROM applications WHERE email = ? AND position = ?';
+  db.execute(deleteQuery, [email, position], (err, result) => {
+    if (err) {
+      return res.status(500).json({ message: "Error deleting submission from database." });
     }
 
-    let submissions = data ? JSON.parse(data) : [];
-
-    // Silinecek başvuruyu bul
-    const index = submissions.findIndex(
-      (submission) =>
-        submission.email === email && submission.position === position
-    );
-    if (index === -1) {
+    if (result.affectedRows === 0) {
       return res.status(404).json({ message: "Submission not found." });
     }
 
-    const [deletedSubmission] = submissions.splice(index, 1);
-
-    // Cloudinary'den dosyayı silmek için URL'den public_id almak
-    if (deletedSubmission.filePath) {
-      const fileUrl = deletedSubmission.filePath;
-
-      // URL'den public_id'yi çıkar
-      const pathParts = fileUrl.split('/image/upload/')[1]?.split('/');
-      const publicId = pathParts.slice(2).join('/').split('.')[0]; // İkinci kısımdan başlayıp uzantıyı çıkarıyoruz
-
-      console.log("publicId:::", publicId);
-
-      cloudinary.api.resource(publicId, function (error, result) {
-        if (error) {
-          console.log('Error retrieving file:', error);
-        } else {
-          console.log('File details:', result);
-        }
-      });
-      // Cloudinary'den dosyayı sil
-      cloudinary.uploader.destroy(publicId, (error, result) => {
-        if (error) {
-          console.error("Error deleting file from Cloudinary:", error);
-        } else {
-          console.log("File deleted from Cloudinary:", result);
-        }
-      });
-    }
-
-
-    // submissions.json dosyasını güncelle
-    fs.writeFile(
-      submissionsFile,
-      JSON.stringify(submissions, null, 2),
-      "utf8",
-      (writeErr) => {
-        if (writeErr) {
-          return res
-            .status(500)
-            .json({ message: "Error updating submissions file." });
-        }
-
-        res.status(200).json({ message: "Submission deleted successfully." });
+    // Cloudinary'den dosyayı silme işlemi
+    cloudinary.uploader.destroy(req.body.publicId, (error, result) => {
+      if (error) {
+        console.error("Error deleting file from Cloudinary:", error);
+      } else {
+        console.log("File deleted from Cloudinary:", result);
       }
-    );
+    });
+
+    res.status(200).json({ message: "Submission deleted successfully." });
   });
 });
-
-
-
 
 // Sunucudan İş Başvurularını Alma
 app.get("/submissions", (req, res) => {
-  fs.readFile(submissionsFile, "utf-8", (err, data) => {
-    if (err && err.code !== "ENOENT") {
-      return res.status(500).json({ message: "Error reading submissions." });
+  const query = 'SELECT * FROM applications';
+  db.execute(query, (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: "Error retrieving submissions from database." });
     }
-
-    const submissions = data ? JSON.parse(data) : [];
-    res.status(200).json(submissions);
+    res.status(200).json(results);
   });
 });
 
-// Admin data bilgilerini alma
-app.get("/login", (req, res) => {
-  fs.readFile(adminData, "utf-8", (err, data) => {
-    if (err && err.code !== "ENOENT") {
-      return res.status(500).json({ message: "Error reading submissions." });
+// Sunucudan Adminleri Alma
+app.get("/admin", (req, res) => {
+  const query = 'SELECT * FROM admin';
+  db.execute(query, (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: "Error retrieving submissions from database." });
     }
-    const admin = data ? JSON.parse(data) : [];
-    res.status(200).json(admin);
+    res.status(200).json(results);
   });
 });
+
+
 
 // Sunucuyu başlat
 app.listen(PORT, (error) => {

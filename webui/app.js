@@ -33,19 +33,34 @@ $(document).ready(function (event) {
   $("#adminLogin").on("submit", (e) => {
     e.preventDefault();
     $.ajax({
-      url: "/login",
+      url: "/admin",
       type: "GET",
-      success: (admin) => {
-        if ($("#username").val() == admin.username && $("#password").val() == admin.password) {
-          showAlert("success", `Login successfully ${admin.username}.`);
-          setTimeout(() => {
-            window.location.href = "admin.html";
-          }, 1500);
+      success: (admins) => {
+
+        const findAdmin = admins.find(admin => admin.authority == $("#authority").val());
+
+        console.log("find Admin", findAdmin);
+        console.log("find Admin", typeof findAdmin);
+
+        if (findAdmin !== undefined) {
+          console.log("buradayım hello")
+          if ($("#username").val() == findAdmin.username && $("#password").val() == findAdmin.password) {
+            showAlert("success", `Login successfully ${findAdmin.username}.`);
+            setTimeout(() => {
+              window.location.href = "admin.html";
+            }, 1500);
+          }
+          else {
+            showAlert(
+              "danger",
+              "Login Failed!"
+            );
+          }
         }
         else {
           showAlert(
             "danger",
-            "Username or password is incorrect!"
+            "Only Authorized Authorities Can Enter.."
           );
         }
       },
@@ -102,6 +117,7 @@ $(document).ready(function (event) {
   setTimeout(() => {
     getApplications();
   }, 10);
+
   /* *********************************** DELETE PROCESS ****************************************** */
   $("#tbody").on("click", ".delete", function () {
     const row = $(this).closest("tr"); // Tıklanan butonun satırını al
