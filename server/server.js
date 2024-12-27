@@ -25,6 +25,7 @@ const db = mysql.createConnection({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
+  port: process.env.DB_PORT,
 });
 
 db.connect((err) => {
@@ -110,6 +111,7 @@ app.post("/submit", upload.single("cvFile"), (req, res) => {
 
   // Veritabanında aynı pozisyon ve e-posta ile başvuru olup olmadığını kontrol et
   const checkQuery = 'SELECT * FROM job_applications WHERE email = ? AND position = ?';
+  console.log("checkQuery", checkQuery);
   db.execute(checkQuery, [email, position], (err, results) => {
     if (err) {
       return res.status(500).json({ message: "Error checking for existing submission." });
