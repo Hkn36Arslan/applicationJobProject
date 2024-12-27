@@ -104,14 +104,17 @@ function sendEmail(toEmail, fullName, position) {
   });
 }
 
+var publicId = null;
+
 // Başvuru kontrolü ve form verilerini işleme
 app.post("/submit", upload.single("cvFile"), (req, res) => {
   const { fullName, email, position } = req.body;
   const filePath = req.file ? req.file.path : null; // Cloudinary'den gelen dosya yolu
+  publicId = req.file ? req.file.filename : null;
 
   // Veritabanında aynı pozisyon ve e-posta ile başvuru olup olmadığını kontrol et
   const checkQuery = 'SELECT * FROM job_applications WHERE email = ? AND position = ?';
-  console.log("checkQuery", checkQuery);
+
   db.execute(checkQuery, [email, position], (err, results) => {
     if (err) {
       return res.status(500).json({ message: "Error checking for existing submission." });
@@ -122,13 +125,16 @@ app.post("/submit", upload.single("cvFile"), (req, res) => {
     }
 
     // Veritabanına başvuru ekleme
-    const insertQuery = 'INSERT INTO job_applications (fullName, email, position, filePath) VALUES (?, ?, ?, ?)';
-    db.execute(insertQuery, [fullName, email, position, filePath], (err, result) => {
+    const insertQuery = 'INSERT INTO job_applications (fullName, email, position, filePath,public_id) VALUES (?, ?, ?, ?,?)';
+    db.execute(insertQuery, [fullName, email, position, filePath, publicId], (err, result) => {
       if (err) {
+        // Hata mesajını daha ayrıntılı yazdırmak
+        console.error("Error saving submission to database:", err.message);
+        console.error("Error details:", err);
         return res.status(500).json({ message: "Error saving submission to database." });
       }
 
-      console.log("Received data:", { fullName, email, position, filePath });
+      console.log("Received data:", { fullName, email, position, filePath, publicId });
 
       // E-posta gönderme
       sendEmail(email, fullName, position);
@@ -156,10 +162,14 @@ app.delete("/delete", (req, res) => {
     }
 
     // Cloudinary'den dosyayı silme işlemi
-    cloudinary.uploader.destroy(req.body.publicId, (error, result) => {
+    cloudinary.uploader.destroy(publicId, (error, result) => {
+      console.log("req.body.publicId", publicId);
       if (error) {
+        console.log("Silme başarısız.")
         console.error("Error deleting file from Cloudinary:", error);
+
       } else {
+        console.log("Silme başarılı")
         console.log("File deleted from Cloudinary:", result);
       }
     });

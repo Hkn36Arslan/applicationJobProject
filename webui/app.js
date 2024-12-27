@@ -39,9 +39,6 @@ $(document).ready(function (event) {
 
         const findAdmin = admins.find(admin => admin.authority == $("#authority").val());
 
-        console.log("find Admin", findAdmin);
-        console.log("find Admin", typeof findAdmin);
-
         if (findAdmin !== undefined) {
           console.log("buradayım hello")
           if ($("#username").val() == findAdmin.username && $("#password").val() == findAdmin.password) {
